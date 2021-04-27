@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="main">
+	<select id="getKeyList" parameterType="String" resultType="hashmap">
+		SELECT keyName, keyTitle
+		FROM sheetinfo
+		ORDER BY keyTitle ASC
+	</select>
+	
+	<select id="getTitleName" parameterType="Integer" resultType="String">
+		SELECT chartTitle
+		FROM charttitle
+		WHERE
+			chartNum = ${idx }
+		ORDER BY chartIdx ASC
+	</select>
+	
+	<!-- 2 번 시작 -->
+	<select id="getVisitorMonth" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+		FROM datavisitor
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataName ASC
+	</select>
+	<!-- 2 번 종료 -->
+	
+	<!-- 3 번 시작 -->
+	<select id="getLangTotal" parameterType="hashmap" resultType="hashmap">
+		SELECT #{lang } AS LANG
+			, dataDate
+			, SUM(col0) AS currentSession
+		FROM datalang
+		WHERE
+			1 = 1
+			<if test="lang != null and lang.equals('ko')">
+			AND dataName LIKE '%ko%'
+			</if>
+			
+			<if test="lang != null and lang.equals('en')">
+			AND dataName NOT LIKE '%ko%'
+			AND dataName NOT LIKE '%ja%'
+			AND dataName NOT LIKE '%zh%'
+			</if>
+			
+			<if test="lang != null and lang.equals('ja')">
+			AND dataName LIKE '%ja%'
+			</if>
+			
+			<if test="lang != null and lang.equals('cn')">
+			AND dataName LIKE '%zh%'
+			AND dataName NOT LIKE '%zh-tw%'
+			AND dataName NOT LIKE '%zh-hk%'
+			</if>
+			
+			<if test="lang != null and lang.equals('tw')">
+			AND (dataName LIKE '%zh-tw%'
+			OR dataName LIKE '%zh-hk%')
+			</if>
+		GROUP BY dataDate
+		ORDER BY dataDate ASC;
+	</select>
+	<!-- 3 번 종료 -->
+	
+	<!-- 4 번 시작 -->
+	<select id="getLangMonth" parameterType="hashmap" resultType="hashmap">
+		SELECT #{lang } AS LANG
+			, SUM(col0) AS currentSession
+			, AVG(col1) AS newSessionRate
+			, SUM(col2) AS newSession
+			, AVG(col4) AS avgSessionPageView
+			, AVG(col5) AS avgSessionTime
+		FROM datalang
+		WHERE
+			dataDate = #{date }
+			<if test="lang != null and lang.equals('ko')">
+			AND dataName LIKE '%ko%';
+			</if>
+			
+			<if test="lang != null and lang.equals('en')">
+			AND dataName NOT LIKE '%ko%'
+			AND dataName NOT LIKE '%ja%'
+			AND dataName NOT LIKE '%zh%';
+			</if>
+			
+			<if test="lang != null and lang.equals('ja')">
+			AND dataName LIKE '%ja%';
+			</if>
+			
+			<if test="lang != null and lang.equals('cn')">
+			AND dataName LIKE '%zh%'
+			AND dataName NOT LIKE '%zh-tw%'
+			AND dataName NOT LIKE '%zh-hk%';
+			</if>
+			
+			<if test="lang != null and lang.equals('tw')">
+			AND (dataName LIKE '%zh-tw%'
+			OR dataName LIKE '%zh-hk%');
+			</if>
+	</select>
+	<!-- 4 번 종료 -->
+	
+	<!-- 5 번 시작 -->
+	<select id="getLangZone" parameterType="hashmap" resultType="hashmap">
+		SELECT #{lang } AS LANG
+			, dataDate
+			, SUM(col0) AS pageView
+		FROM datalangzone
+		WHERE
+			1 = 1
+			<if test="lang != null and lang.equals('ko')">
+			AND dataSubName LIKE '%ko%'
+			</if>
+			
+			<if test="lang != null and lang.equals('en')">
+			AND dataSubName NOT LIKE '%ko%'
+			AND dataSubName NOT LIKE '%ja%'
+			AND dataSubName NOT LIKE '%zh%'
+			</if>
+			
+			<if test="lang != null and lang.equals('ja')">
+			AND dataSubName LIKE '%ja%'
+			</if>
+			
+			<if test="lang != null and lang.equals('cn')">
+			AND dataSubName LIKE '%zh%'
+			AND dataSubName NOT LIKE '%zh-tw%'
+			AND dataSubName NOT LIKE '%zh-hk%'
+			</if>
+			
+			<if test="lang != null and lang.equals('tw')">
+			AND (dataSubName LIKE '%zh-tw%'
+			OR dataSubName LIKE '%zh-hk%')
+			</if>
+		GROUP BY dataDate
+		ORDER BY dataDate ASC;
+	</select>
+	
+	<select id="getLangZoneTotal" parameterType="hashmap" resultType="hashmap">
+		SELECT #{lang } AS LANG
+			, 'TOTAL' AS dataDate
+			, SUM(col0) AS pageView
+		FROM datalangzone
+		WHERE
+			1 = 1
+			<if test="lang != null and lang.equals('ko')">
+			AND dataSubName LIKE '%ko%'
+			</if>
+			
+			<if test="lang != null and lang.equals('en')">
+			AND dataSubName NOT LIKE '%ko%'
+			AND dataSubName NOT LIKE '%ja%'
+			AND dataSubName NOT LIKE '%zh%'
+			</if>
+			
+			<if test="lang != null and lang.equals('ja')">
+			AND dataSubName LIKE '%ja%'
+			</if>
+			
+			<if test="lang != null and lang.equals('cn')">
+			AND dataSubName LIKE '%zh%'
+			AND dataSubName NOT LIKE '%zh-tw%'
+			AND dataSubName NOT LIKE '%zh-hk%'
+			</if>
+			
+			<if test="lang != null and lang.equals('tw')">
+			AND (dataSubName LIKE '%zh-tw%'
+			OR dataSubName LIKE '%zh-hk%')
+			</if>
+	</select>
+	<!-- 5 번 종료 -->
+	
+	<!-- 6 번 시작 -->
+	<select id="getNationDateList" parameterType="String" resultType="String">
+		SELECT dataDate
+		FROM datanation
+		GROUP BY dataDate;
+	</select>
+	
+	<select id="getNationRank" parameterType="String" resultType="hashmap">
+		SELECT dataName, col0
+		FROM datanation
+		WHERE
+			dataDate = #{date }
+		ORDER BY col0 DESC
+		LIMIT 5;
+	</select>
+	<!-- 6 번 종료 -->
+	
+	<!-- 7 번 시작 -->
+	<select id="getNationMonth" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM datanation
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+		LIMIT 10;
+	</select>
+	
+	<select id="getPreNationMonthChk" parameterType="hashmap" resultType="Integer">
+		SELECT count(*)
+		FROM datanation
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	
+	<select id="getPreNationMonth" parameterType="hashmap" resultType="Integer">
+		SELECT col0
+		FROM datanation
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	<!-- 7 번 종료 -->
+	
+	<!-- 81 번 시작 -->
+	<select id="getDevice" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM datadevice
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+	</select>
+	<!-- 81 번 종료 -->
+	
+	<!-- 82 번 시작 -->
+	<select id="getOs" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM dataos
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+	</select>
+	<!-- 82 번 종료 -->
+	
+	<!-- 9 번 시작 -->
+	<select id="getInflow" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM datainflow
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+	</select>
+	
+	<select id="getPreInflowChk" parameterType="hashmap" resultType="Integer">
+		SELECT count(*)
+		FROM datainflow
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	
+	<select id="getPreInflow" parameterType="hashmap" resultType="Integer">
+		SELECT col0
+		FROM datainflow
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	<!-- 9 번 종료 -->
+	
+	<!-- 10 번 시작 -->
+	<select id="getOrganic" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM dataorganic
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+	</select>
+	<!-- 10 번 종료 -->
+	
+	<!-- 11 번 시작 -->
+	<select id="getReferral" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM datareferral
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+	</select>
+	
+	<select id="getPreReferralChk" parameterType="hashmap" resultType="Integer">
+		SELECT count(*)
+		FROM datareferral
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	
+	<select id="getPreReferral" parameterType="hashmap" resultType="Integer">
+		SELECT col0
+		FROM datareferral
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	<!-- 11 번 종료 -->
+	
+	<!-- 12 번 시작 -->
+	<select id="getSocial" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM datasocial
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+	</select>
+	
+	<select id="getPreSocialChk" parameterType="hashmap" resultType="Integer">
+		SELECT count(*)
+		FROM datasocial
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	
+	<select id="getPreSocial" parameterType="hashmap" resultType="Integer">
+		SELECT col0
+		FROM datasocial
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	<!-- 12 번 종료 -->
+	
+	<!-- 14 번 시작 -->
+	<select id="getPageView" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM datapageview
+		WHERE
+			dataDate = #{date }
+		ORDER BY dataDate ASC, col0 DESC
+		LIMIT 20;
+	</select>
+	
+	<select id="getPrePageViewChk" parameterType="hashmap" resultType="Integer">
+		SELECT count(*)
+		FROM datapageview
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	
+	<select id="getPrePageView" parameterType="hashmap" resultType="Integer">
+		SELECT col0
+		FROM datapageview
+		WHERE
+			dataDate = #{date }
+			AND dataName = #{dataName }
+	</select>
+	<!-- 14 번 종료 -->
+</mapper>

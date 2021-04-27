@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mainRest">
+	<select id="getSheetInfo" parameterType="String" resultType="hashmap">
+		SELECT *
+		FROM sheetinfo
+		WHERE
+			keyName = #{key }
+	</select>
+	
+	<insert id="saveData" parameterType="hashmap">
+		INSERT INTO data${key } (
+			dataDate
+			, dataName
+			<if test="key != null and key.equals('LangZone')">
+			, dataSubName
+			</if>
+			<foreach collection="colName" item="col">
+			, ${col }
+			</foreach>
+		)
+		VALUE
+		<foreach collection="list" item="list" index="i" separator=", ">
+		(#{date }
+			,#{list.dataName }
+			<if test="key != null and key.equals('LangZone')">
+			, #{list.dataSubName }
+			</if>
+			<foreach collection="list.colData" item="col">
+			, ${col }
+			</foreach>
+			)
+		</foreach>
+	</insert>
+</mapper>
