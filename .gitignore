@@ -1,8 +1,8 @@
 ### Eclipse ###
 
 .metadata
-mapo/bin/
-mapo/tmp/
+ktcReport/bin/
+ktcReport/tmp/
 *.tmp
 *.bak
 *.swp
@@ -11,8 +11,8 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-mapo/target/
-mapo/bulid/
+ktcReport/target/
+ktcReport/bulid/
 MANIFEST.MF
 # MacOS auto created files
 .DS_Store
